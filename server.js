@@ -54,6 +54,8 @@ const db = require('./db'); // MongoDB connection
 const bodyParser = require('body-parser');
 app.use(bodyParser.json()); // store the converted data in req.body
 
+require('dotenv').config();
+
 
 // //Post route to add a person
 // app.post('/person', async(req, res) =>{
@@ -152,9 +154,11 @@ app.get('/', function (req, res) {
     res.send('🏨 Welcome to my hotel... How can I help you?');
 });
 
+const PORT = process.env.PORT || 3000
+
 // Start the server after DB connection is ready
 db.once('open', () => {
-    app.listen(3000, () => {
+    app.listen(PORT, () => {
         console.log('🚀 Server is running on http://localhost:3000');
     });
 });

@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 // Define MongoDB Connection URI
-const mongoURI = 'mongodb://127.0.0.1:27017/hotels'; // Use 127.0.0.1 instead of localhost for IPv4
+//const mongoURI = process.env.MONGODB_URL_LOCAL  // Use 127.0.0.1 instead of localhost for IPv4
+const mongoURI = process.env.MONGODB_URL;
 
 // Set up MongoDB Connection
 mongoose.connect(mongoURI)
