@@ -53,9 +53,10 @@ const db = require('./db'); // MongoDB connection
 //const MenuItem = require('./models/MenuItem');
 const bodyParser = require('body-parser');
 app.use(bodyParser.json()); // store the converted data in req.body
+const passport = require('./auth');
 
 require('dotenv').config();
-
+const PORT = process.env.PORT || 3000
 
 // //Post route to add a person
 // app.post('/person', async(req, res) =>{
@@ -143,18 +144,45 @@ require('dotenv').config();
 
 
       
-const personRoutes = require('./routes/personRoutes')  // Import the Routes file
+  const logRequest = (req, res, next) => {    // Middleware Function
+    console.log(`[${new Date().toLocaleString()}] Request Made to : ${req.originalUrl}`);
+    next();  // Move on to the next Phase
+    
+}
+app.use(logRequest)
 
-app.use('/person', personRoutes);  //use the routes
+// passport.use(new localStrategy(async (username, password, done) => {
+//     try {
+//         console.log('Received credentials: ', username, password);
+//         const user = await Person.findOne({ username });
+//         if (!user)
+//             return done(null, false, { message: 'Incorrect username.' });
 
-const menuItemRouts = require('./routes/menuItemRoutes')
-app.use('/menu', menuItemRouts )
+//         // Compare hashed password
+//         const isMatch = await bcrypt.compare(password, user.password);
+//         if (isMatch) {
+//             return done(null, user);
+//         } else {
+//             return done(null, false, { message: 'Incorrect password.' });
+//         }
+//     } catch (err) {
+//         return done(err);
+//     }
+// }));
 
-app.get('/', function (req, res) {
+app.use(passport.initialize());
+
+const localAuthMiddleware = passport.authenticate('local', { session: false });
+
+app.get('/',  function (req, res) {
     res.send('🏨 Welcome to my hotel... How can I help you?');
 });
 
-const PORT = process.env.PORT || 3000
+const personRoutes = require('./routes/personRoutes');
+const menuItemRoutes = require('./routes/menuItemRoutes');
+
+app.use('/person', personRoutes);
+app.use('/menu', menuItemRoutes);
 
 // Start the server after DB connection is ready
 db.once('open', () => {
